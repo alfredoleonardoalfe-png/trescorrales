@@ -9,26 +9,27 @@ export default function CajaCamal() {
   const [tara, setTara] = useState("")
   const [lista, setLista] = useState([])
 
-  const taraTotal = tara ? parseFloat(tara) * Number(cantJavas) : 0
-  const pesoNeto = pesoBruto ? (parseFloat(pesoBruto) - taraTotal).toFixed(2) : "0"
+  const taraNum = tara === "" ? 0 : parseFloat(tara)
+  const brutoNum = pesoBruto === "" ? 0 : parseFloat(pesoBruto)
+  const taraTotal = taraNum * Number(cantJavas)
+  const pesoNeto = (brutoNum - taraTotal).toFixed(2)
 
   const guardar = () => {
-    if (!pesoBruto) return alert("Pon el peso bruto")
+    if (pesoBruto === "" || isNaN(parseFloat(pesoBruto))) return alert("Pon el peso bruto, si es 0 pon 0")
     const nuevo = {
       id: Date.now(),
       nro: lista.length + 1,
       operativo,
       proveedor,
       cantJavas,
-      pesoBruto: parseFloat(pesoBruto),
-      taraUnitaria: parseFloat(tara) || 0,
+      pesoBruto: brutoNum,
+      taraUnitaria: taraNum,
       taraTotal,
       pesoNeto: parseFloat(pesoNeto),
       hora: new Date().toLocaleTimeString(),
     }
     setLista([...lista, nuevo])
     setPesoBruto("")
-    setTara("")
   }
 
   const totalNeto = lista.reduce((a, b) => a + b.pesoNeto, 0)
@@ -47,7 +48,7 @@ export default function CajaCamal() {
           <select value={proveedor} onChange={e => setProveedor(e.target.value)} style={{ width: "100%", padding: 12, marginBottom: 10, border: "2px solid black" }}>
             <option>San Fernando</option><option>Redondo</option><option>Otro</option>
           </select>
-          <label>Cantidad de Javas en esta pesada:</label>
+          <label>Cantidad de Javas:</label>
           <div style={{ display: "flex", gap: 6, marginBottom: 10, marginTop: 5 }}>
             {[1,2,3,4,5].map(n => (
               <button key={n} onClick={() => setCantJavas(n)} style={{ flex: 1, padding: 12, background: cantJavas==n? "black" : "white", color: cantJavas==n? "white" : "black", border: "2px solid black", fontWeight: "bold" }}>{n}</button>
@@ -56,16 +57,16 @@ export default function CajaCamal() {
           <div style={{ display: "flex", gap: 10 }}>
             <div style={{ flex: 1 }}>
               <label>Bruto:</label>
-              <input type="number" value={pesoBruto} onChange={e => setPesoBruto(e.target.value)} placeholder="120" style={{ width: "100%", padding: 12, border: "2px solid black", fontSize: 20 }} />
+              <input type="number" inputMode="decimal" value={pesoBruto} onChange={e => setPesoBruto(e.target.value)} placeholder="0" style={{ width: "100%", padding: 12, border: "2px solid black", fontSize: 22, fontWeight: "bold" }} />
             </div>
             <div style={{ flex: 1 }}>
               <label>Tara x Java:</label>
-              <input type="number" value={tara} onChange={e => setTara(e.target.value)} placeholder="6" style={{ width: "100%", padding: 12, border: "2px solid black", fontSize: 20 }} />
+              <input type="number" inputMode="decimal" value={tara} onChange={e => setTara(e.target.value)} placeholder="0" style={{ width: "100%", padding: 12, border: "2px solid black", fontSize: 22, fontWeight: "bold" }} />
             </div>
           </div>
           <div style={{ background: "#e6ffe6", padding: 10, marginTop: 10, textAlign: "center", border: "2px solid green" }}>
-            <small>{pesoBruto || 0}kg - ({cantJavas} x {tara || 0}kg) = {taraTotal.toFixed(2)}kg tara total</small><br/>
-            Neto: <br/><b style={{ fontSize: 26 }}>{pesoNeto} kg</b>
+            <small>{brutoNum}kg - ({cantJavas} x {taraNum}kg) = {taraTotal.toFixed(2)}kg tara</small><br/>
+            Neto: <br/><b style={{ fontSize: 28 }}>{pesoBruto==="" && tara==="" ? "0" : pesoNeto} kg</b>
           </div>
           <button onClick={guardar} style={{ width: "100%", padding: 15, background: "black", color: "white", marginTop: 12, fontWeight: "bold", fontSize: 16 }}>GUARDAR 🔒 Y SIGUIENTE ➡️</button>
         </div>
