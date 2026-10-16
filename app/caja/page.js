@@ -2,6 +2,7 @@
 import { useState } from "react"
 
 export default function CajaCamal() {
+  const [operativo, setOperativo] = useState("Carlos")
   const [proveedor, setProveedor] = useState("San Fernando")
   const [cantJavas, setCantJavas] = useState(5)
   const [pesoBruto, setPesoBruto] = useState("")
@@ -15,6 +16,7 @@ export default function CajaCamal() {
     const nuevo = {
       id: Date.now(),
       nro: lista.length + 1,
+      operativo,
       proveedor,
       cantJavas,
       pesoBruto: parseFloat(pesoBruto),
@@ -33,6 +35,13 @@ export default function CajaCamal() {
   return (
     <div style={{ padding: 10, fontFamily: "Arial", maxWidth: 1000, margin: "0 auto" }}>
       <h2>🐔 CAJA CAMAL - RECEPCION</h2>
+      
+      {/* AHORA EDITABLE */}
+      <div style={{ background: "#eee", padding: 8, marginBottom: 10, border: "2px solid black", display: "flex", alignItems: "center", gap: 10 }}>
+        <b>Recepciona:</b>
+        <input value={operativo} onChange={e => setOperativo(e.target.value)} style={{ padding: 8, border: "2px solid black", fontWeight: "bold", flex: 1 }} placeholder="Pon tu nombre" />
+      </div>
+
       <div style={{ display: "flex", gap: 15, flexWrap: "wrap" }}>
         <div style={{ flex: "1 1 320px", border: "2px solid black", padding: 12 }}>
           <label>Proveedor:</label>
@@ -62,16 +71,16 @@ export default function CajaCamal() {
         </div>
         <div style={{ flex: "1 1 350px", border: "2px solid black", padding: 12, background: "#f9f9f9" }}>
           <h3 style={{ marginTop: 0 }}>👁️ VISTA PREVIA EN SECUENCIA</h3>
-          <div style={{ background: "black", color: "white", padding: 10, display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
+          <div style={{ background: "black", color: "white", padding: 10, display: "flex", justifyContent: "space-between", fontWeight: "bold", fontSize: 13 }}>
             <span>Pesadas: {lista.length}</span>
             <span>Javas: {totalJavas}</span>
             <span>{totalNeto.toFixed(2)} kg</span>
           </div>
           <div style={{ maxHeight: 500, overflowY: "auto", marginTop: 10 }}>
-            {lista.length === 0 && <p style={{ textAlign: "center", color: "#888" }}>Aún no hay pesadas.<br/>Empieza arriba.</p>}
+            {lista.length === 0 && <p style={{ textAlign: "center", color: "#888" }}>Aún no hay pesadas.</p>}
             {[...lista].reverse().map(item => (
               <div key={item.id} style={{ background: "white", borderLeft: "5px solid red", border: "1px solid #ccc", padding: 8, marginBottom: 6, display: "flex", justifyContent: "space-between" }}>
-                <div><b>#{item.nro}</b> - {item.cantJavas} javas<br/><small>{item.proveedor} - {item.hora}</small></div>
+                <div><b>#{item.nro}</b> - {item.cantJavas} javas - {item.operativo}<br/><small>{item.proveedor} - {item.hora}</small></div>
                 <div style={{ textAlign: "right" }}><b style={{ color: "red" }}>{item.pesoNeto} kg</b><br/><small>🔒 BLOQUEADO</small></div>
               </div>
             ))}
