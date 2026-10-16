@@ -2,20 +2,21 @@
 import { useState } from "react"
 
 export default function CajaCamal() {
-  const [operativo, setOperativo] = useState("Carlos")
+  const [operativo, setOperativo] = useState("Jorge")
   const [proveedor, setProveedor] = useState("San Fernando")
   const [cantJavas, setCantJavas] = useState(5)
   const [pesoBruto, setPesoBruto] = useState("")
-  const [tara, setTara] = useState("")
+  const [tara, setTara] = useState("5")
   const [lista, setLista] = useState([])
 
   const taraNum = tara === "" ? 0 : parseFloat(tara)
   const brutoNum = pesoBruto === "" ? 0 : parseFloat(pesoBruto)
   const taraTotal = taraNum * Number(cantJavas)
-  const pesoNeto = (brutoNum - taraTotal).toFixed(2)
+  const pesoNeto = pesoBruto === "" ? "0.00" : (brutoNum - taraTotal).toFixed(2)
+  const esValido = pesoBruto !== "" && !isNaN(parseFloat(pesoBruto)) && parseFloat(pesoNeto) > 0
 
   const guardar = () => {
-    if (pesoBruto === "" || isNaN(parseFloat(pesoBruto))) return alert("Pon el peso bruto, si es 0 pon 0")
+    if (!esValido) return alert("Pon un peso bruto mayor a la tara")
     const nuevo = {
       id: Date.now(),
       nro: lista.length + 1,
@@ -64,11 +65,14 @@ export default function CajaCamal() {
               <input type="number" inputMode="decimal" value={tara} onChange={e => setTara(e.target.value)} placeholder="0" style={{ width: "100%", padding: 12, border: "2px solid black", fontSize: 22, fontWeight: "bold" }} />
             </div>
           </div>
-          <div style={{ background: "#e6ffe6", padding: 10, marginTop: 10, textAlign: "center", border: "2px solid green" }}>
-            <small>{brutoNum}kg - ({cantJavas} x {taraNum}kg) = {taraTotal.toFixed(2)}kg tara</small><br/>
-            Neto: <br/><b style={{ fontSize: 28 }}>{pesoBruto==="" && tara==="" ? "0" : pesoNeto} kg</b>
+          <div style={{ background: pesoBruto==="" ? "#f0f0f0" : "#e6ffe6", padding: 10, marginTop: 10, textAlign: "center", border: pesoBruto==="" ? "2px solid #ccc" : "2px solid green" }}>
+            {pesoBruto==="" ? (
+              <><small>Esperando peso bruto...</small><br/><b style={{ fontSize: 28 }}>0.00 kg</b></>
+            ) : (
+              <><small>{brutoNum}kg - ({cantJavas} x {taraNum}kg) = {taraTotal.toFixed(2)}kg tara</small><br/>Neto: <br/><b style={{ fontSize: 28 }}>{pesoNeto} kg</b></>
+            )}
           </div>
-          <button onClick={guardar} style={{ width: "100%", padding: 15, background: "black", color: "white", marginTop: 12, fontWeight: "bold", fontSize: 16 }}>GUARDAR 🔒 Y SIGUIENTE ➡️</button>
+          <button onClick={guardar} disabled={!esValido} style={{ width: "100%", padding: 15, background: esValido ? "black" : "#999", color: "white", marginTop: 12, fontWeight: "bold", fontSize: 16 }}>GUARDAR 🔒 Y SIGUIENTE ➡️</button>
         </div>
         <div style={{ flex: "1 1 350px", border: "2px solid black", padding: 12, background: "#f9f9f9" }}>
           <h3 style={{ marginTop: 0 }}>👁️ VISTA PREVIA EN SECUENCIA</h3>
