@@ -1,24 +1,23 @@
-export default function Home() {
-  return (
-    <div style={{padding: '20px', fontFamily: 'Arial', maxWidth: '800px', margin: '0 auto'}}>
-      <h1 style={{fontSize: '32px', fontWeight: '900'}}>TRES CORRALES</h1>
-      <p>Plataforma SAAS para negocios locales - Ica, Perú</p>
-      <p style={{background: 'green', color: 'white', padding: '10px', borderRadius: '20px', display: 'inline-block', marginTop: '10px', fontWeight: 'bold'}}>
-        30 DÍAS GRATIS - Luego desde S/3 al día = una gaseosa
-      </p>
-      
-      <div style={{marginTop: '30px', border: '2px solid black', padding: '20px', borderRadius: '15px'}}>
-        <h2>CAMALES - S/10/día</h2>
-        <p><b>Roles:</b> Asistente, Vendedor, Despachador</p>
-        <p><b>Incluye:</b> Compra/Venta, Pago/Cobranza, Gastos Reparto, Gasto Camiones, Planilla</p>
-        <a href="/caja" style={{background: 'black', color: 'white', padding: '10px 20px', borderRadius: '10px', textDecoration: 'none', display: 'inline-block', marginTop: '10px'}}>PROBAR CAMALES</a>
-      </div>
+export default function Home(){
+return(
+<div style={{fontFamily:'Arial', maxWidth:800, margin:'0 auto', padding:20}}>
+<h1 style={{fontSize:32, fontWeight:900}}>TRES CORRALES</h1>
+<p>Plataforma SAAS para negocios locales - Ica, Perú</p>
+<div style={{background:'#0a7a33', color:'white', padding:'10px 20px', borderRadius:30, display:'inline-block', fontWeight:'bold', marginTop:10}}>30 DÍAS GRATIS - Luego desde S/3 al día = una gaseosa</div>
 
-      <div style={{marginTop: '20px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px'}}>
-        <div style={{border: '1px solid #ccc', padding: '15px', borderRadius: '10px'}}><b>RESTAURANT</b><br/>S/5/día<br/>Delivery, QR, Corto</div>
-        <div style={{border: '1px solid #ccc', padding: '15px', borderRadius: '10px'}}><b>BODEGA</b><br/>S/3/día<br/>Stock, Pedidos</div>
-        <div style={{border: '1px solid #ccc', padding: '15px', borderRadius: '10px'}}><b>DENTISTA</b><br/>S/5/día<br/>Agenda, Consulta</div>
-      </div>
-    </div>
-  );
-}
+<div style={{border:'2px solid black', borderRadius:15, padding:20, marginTop:25}}>
+<h2 style={{margin:0}}>CAMALES - S/10/día</h2>
+<p><b>Roles:</b> Asistente, Vendedor, Despachador, <span style={{background:'green', color:'white', padding:'2px 8px', borderRadius:10}}>BALANCERO (Recepción y Despacho)</span></p>
+<p><b>Incluye:</b> Compra/Venta, Pago/Cobranza, Gastos Reparto, Gasto Camiones, Planilla, <b>+ Pesaje de Javas, Bruto/Tara/Neto</b></p>
+<a href="/caja" style={{background:'black', color:'white', padding:'12px 25px', borderRadius:10, textDecoration:'none', fontWeight:'bold', display:'inline-block', marginTop:10}}>PROBAR CAMALES</a>
+</div>
+
+<div style={{display:'flex', gap:20, marginTop:30, flexWrap:'wrap'}}>
+<div><b>RESTAURANT</b><br/>S/5/día<br/><small>Delivery, QR, Corto</small></div>
+<div><b>BODEGA</b><br/>S/3/día<br/><small>Stock, Pedidos</small></div>
+<div><b>DENTISTA</b><br/>S/5/día<br/><small>Agenda, Consulta</small></div>
+</div>
+
+<p style={{marginTop:30, textAlign:'center'}}><a href="/caja">Ir a /caja →</a></p>
+</div>
+)}
