@@ -1,91 +1,87 @@
 "use client"
 import { useState } from "react"
 
-export default function CajaCamales() {
+export default function CajaCamales(){
   const [rol, setRol] = useState(null)
-  const [tab, setTab] = useState("venta")
+  const [subTab, setSubTab] = useState("recepcion")
+  // BALANCERO - RECEPCION
+  const [recepciona, setRecepciona] = useState("Alfredo")
+  const [proveedor, setProveedor] = useState("Redondo")
+  const [javas, setJavas] = useState(5)
+  const [bruto, setBruto] = useState("135")
+  const [tara, setTara] = useState("7")
+  const [lista, setLista] = useState([{id:1, prov:"Redondo", bruto:120, javas:5, tara:7, neto:85, quien:"Alfredo"}])
+  // CAJA
   const [ventas, setVentas] = useState([])
-  const [compras, setCompras] = useState([])
-  const [gastos, setGastos] = useState([])
 
-  const [form, setForm] = useState({ concepto: "", monto: "", tipo: "venta" })
+  const b = parseFloat(bruto)||0
+  const t = parseFloat(tara)||0
+  const neto = b - (javas * t)
+  const totalKg = lista.reduce((a,c)=>a+c.neto,0)
 
-  const agregar = () => {
-    if(!form.concepto || !form.monto) return
-    const item = { id: Date.now(), concepto: form.concepto, monto: parseFloat(form.monto), fecha: new Date().toLocaleString() }
-    if(form.tipo === "venta") setVentas([...ventas, item])
-    if(form.tipo === "compra") setCompras([...compras, item])
-    if(form.tipo === "gasto") setGastos([...gastos, item])
-    setForm({ concepto: "", monto: "", tipo: form.tipo })
+  const guardarPesada = () => {
+    if(neto<=0) return alert("Peso incorrecto")
+    setLista([...lista, {id:Date.now(), prov:proveedor, bruto:b, javas, tara:t, neto, quien:recepciona}])
+    setBruto("")
   }
-
-  const totalVentas = ventas.reduce((a,b)=>a+b.monto,0)
-  const totalCompras = compras.reduce((a,b)=>a+b.monto,0)
-  const totalGastos = gastos.reduce((a,b)=>a+b.monto,0)
-  const caja = totalVentas - totalCompras - totalGastos
 
   if(!rol){
     return(
-      <div style={{padding:40, fontFamily:'Arial', textAlign:'center', maxWidth:500, margin:'0 auto'}}>
-        <h1 style={{fontWeight:900}}>TRES CORRALES - CAMALES</h1>
+      <div style={{padding:30, fontFamily:'Arial', maxWidth:500, margin:'0 auto', textAlign:'center'}}>
+        <h1 style={{fontWeight:900}}>TRES CORRALES -<br/>CAMALES</h1>
         <p>Ingresa tu rol para continuar</p>
-        <div style={{display:'grid', gap:15, marginTop:20}}>
-          <button onClick={()=>setRol('Asistente')} style={btn}>ASISTENTE (Compra/Venta)</button>
-          <button onClick={()=>setRol('Vendedor')} style={btn}>VENDEDOR (Ventas/Cobranza)</button>
-          <button onClick={()=>setRol('Despachador')} style={{...btn, background:'#222'}}>DESPACHADOR (Gastos/Planilla)</button>
+        <div style={{display:'grid', gap:12, marginTop:20}}>
+          <button onClick={()=>setRol('ASISTENTE')} style={btn}>ASISTENTE (Compra/Venta)</button>
+          <button onClick={()=>setRol('VENDEDOR')} style={btn}>VENDEDOR (Ventas/Cobranza)</button>
+          <button onClick={()=>setRol('DESPACHADOR')} style={btn}>DESPACHADOR (Gastos/Planilla)</button>
+          <button onClick={()=>setRol('BALANCERO')} style={{...btn, background:'#006400', border:'2px solid gold'}}>BALANCERO (Recepción y Despacho)</button>
         </div>
-        <a href="/" style={{display:'block', marginTop:20}}>← Volver a portada</a>
       </div>
     )
   }
 
   return(
-    <div style={{padding:15, fontFamily:'Arial', maxWidth:1000, margin:'0 auto'}}>
-      <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', borderBottom:'2px solid black', paddingBottom:10}}>
-        <h2 style={{margin:0}}>CAMALES | Rol: {rol}</h2>
-        <div style={{display:'flex', gap:10, alignItems:'center'}}>
-          <div style={{background: caja>=0?'green':'red', color:'white', padding:'5px 12px', borderRadius:20, fontWeight:'bold'}}>CAJA: S/ {caja.toFixed(2)}</div>
-          <button onClick={()=>setRol(null)} style={{padding:'5px 10px'}}>Salir</button>
+    <div style={{fontFamily:'Arial', maxWidth:600, margin:'0 auto', padding:10}}>
+      <div style={{display:'flex', justifyContent:'space-between', borderBottom:'2px solid black', paddingBottom:8}}>
+        <b>{rol}</b><div><span style={{background:'black', color:'white', padding:'4px 8px', borderRadius:10, fontSize:12, marginRight:10}}>{lista.length} pesadas - {totalKg.toFixed(1)}kg</span><button onClick={()=>setRol(null)}>Salir</button></div>
+      </div>
+
+      {rol==='BALANCERO' && (
+        <div style={{display:'flex', gap:6, marginTop:10}}>
+          <button onClick={()=>setSubTab('recepcion')} style={{flex:1, padding:10, background: subTab==='recepcion'?'black':'white', color: subTab==='recepcion'?'white':'black', border:'2px solid black', fontWeight:'bold'}}>RECEPCIÓN</button>
+          <button onClick={()=>setSubTab('despacho')} style={{flex:1, padding:10, background: subTab==='despacho'?'black':'white', color: subTab==='despacho'?'white':'black', border:'2px solid black', fontWeight:'bold'}}>DESPACHO</button>
         </div>
-      </div>
+      )}
 
-      <div style={{display:'flex', gap:8, marginTop:15, flexWrap:'wrap'}}>
-        {["venta","compra","cobranza","pago","gastos_reparto","gastos_camion","planilla"].map(t=>(
-          <button key={t} onClick={()=>setTab(t)} style={{padding:'8px 12px', borderRadius:20, border:'1px solid black', background: tab===t ? 'black':'white', color: tab===t ? 'white':'black', fontSize:12, textTransform:'uppercase'}}>{t.replace('_',' ')}</button>
-        ))}
-      </div>
-
-      <div style={{marginTop:20, border:'1px solid #ccc', padding:15, borderRadius:15, background:'#f9f9f9'}}>
-        <h3 style={{textTransform:'uppercase'}}>{tab} - {rol}</h3>
-        <div style={{display:'flex', gap:10, flexWrap:'wrap'}}>
-          <input placeholder="Concepto Ej: Venta Carnero / Gasolina / Pago" value={form.concepto} onChange={e=>setForm({...form, concepto:e.target.value})} style={input}/>
-          <input placeholder="Monto S/" type="number" value={form.monto} onChange={e=>setForm({...form, monto:e.target.value})} style={{...input, width:120}}/>
-          <select value={form.tipo} onChange={e=>setForm({...form, tipo:e.target.value})} style={input}>
-            <option value="venta">Venta / Cobranza</option>
-            <option value="compra">Compra / Pago</option>
-            <option value="gasto">Gasto Reparto / Camión / Planilla</option>
-          </select>
-          <button onClick={agregar} style={{...btn, padding:'8px 20px'}}>AGREGAR</button>
+      {(rol==='BALANCERO' && subTab==='recepcion') && (
+        <>
+        <div style={{border:'2px solid black', padding:10, marginTop:10, display:'flex', gap:10}}><b>Recepciona:</b><input value={recepciona} onChange={e=>setRecepciona(e.target.value)} style={{border:'2px solid black', padding:6, flex:1, fontWeight:'bold'}}/></div>
+        <div style={{border:'2px solid black', padding:10, marginTop:10}}>
+          <label>Proveedor:</label><select value={proveedor} onChange={e=>setProveedor(e.target.value)} style={{width:'100%', border:'2px solid black', padding:12, marginTop:5}}><option>Redondo</option><option>Garcia</option><option>Torres</option><option>Otro</option></select>
+          <label style={{marginTop:10, display:'block'}}>Cantidad de Javas:</label><div style={{display:'flex', gap:5, marginTop:5}}>{[1,2,3,4,5].map(n=><button key={n} onClick={()=>setJavas(n)} style={{flex:1, padding:12, border:'2px solid black', background:javas===n?'black':'white', color:javas===n?'white':'black', fontWeight:'bold'}}>{n}</button>)}</div>
+          <div style={{display:'flex', marginTop:10}}><div style={{flex:1}}><label>Bruto:</label><input type="number" value={bruto} onChange={e=>setBruto(e.target.value)} style={{width:'100%', border:'2px solid black', padding:12, fontSize:22, fontWeight:'bold'}}/></div><div style={{flex:1}}><label>Tara x Java:</label><input type="number" value={tara} onChange={e=>setTara(e.target.value)} style={{width:'100%', border:'2px solid black', padding:12, fontSize:22, fontWeight:'bold', borderLeft:'none'}}/></div></div>
+          <div style={{background:'#d4edda', border:'2px solid green', textAlign:'center', padding:10, marginTop:10}}>{b}kg - ({javas} x {t}kg) = {(javas*t).toFixed(2)}kg tara<br/>Neto:<br/><span style={{fontSize:36, fontWeight:900}}>{neto.toFixed(2)} kg</span></div>
+          <button onClick={guardarPesada} style={{width:'100%', background:'black', color:'white', padding:15, fontWeight:'bold', fontSize:18, marginTop:10}}>GUARDAR 🔒 Y SIGUIENTE ➡️</button>
         </div>
-      </div>
+        <div style={{border:'2px solid black', padding:10, marginTop:10}}>
+          <h3>👁️ VISTA PREVIA EN SECUENCIA</h3>
+          <div style={{background:'black', color:'white', padding:8, display:'flex', justifyContent:'space-between', fontWeight:'bold'}}><span>Pesadas: {lista.length}</span><span>Javas: {lista.reduce((a,c)=>a+c.javas,0)}</span><span>{totalKg.toFixed(2)} kg</span></div>
+          {lista.slice().reverse().map(p=><div key={p.id} style={{border:'1px solid #ccc', padding:8, marginTop:6, display:'flex', justifyContent:'space-between'}}><div>#{p.id.toString().slice(-2)} - {p.javas}j x {p.tara}kg - {p.quien}<br/>{p.bruto}kg - {p.javas*p.tara}kg = <b>{p.neto}kg</b></div><div style={{color:'red', fontWeight:'bold'}}>{p.neto} kg<br/><small style={{color:'black'}}>🔒 BLOQUEADO</small></div></div>)}
+        </div>
+        </>
+      )}
 
-      <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:15, marginTop:20}}>
-        <div style={card}><b>Ventas/Cobranza</b><br/>S/ {totalVentas.toFixed(2)}<br/><small>{ventas.length} movs</small></div>
-        <div style={card}><b>Compras/Pagos</b><br/>S/ {totalCompras.toFixed(2)}<br/><small>{compras.length} movs</small></div>
-        <div style={card}><b>Gastos Totales</b><br/>S/ {totalGastos.toFixed(2)}<br/><small>Reparto+Camión+Planilla</small></div>
-      </div>
-
-      <div style={{marginTop:20}}>
-        <h4>Últimos movimientos</h4>
-        {[...ventas, ...compras, ...gastos].sort((a,b)=>b.id-a.id).slice(0,10).map(m=>(
-          <div key={m.id} style={{display:'flex', justifyContent:'space-between', borderBottom:'1px solid #eee', padding:'8px 0'}}>
-            <span>{m.concepto} - {m.fecha}</span><b>S/ {m.monto}</b>
+      {(rol==='BALANCERO' && subTab==='despacho') || rol==='ASISTENTE' || rol==='VENDEDOR' || rol==='DESPACHADOR' ? (
+        rol!=='BALANCERO' || subTab==='despacho' ? (
+          <div style={{border:'2px solid black', padding:10, marginTop:10}}>
+            <h3>{rol} - {rol==='BALANCERO' ? 'DESPACHO' : 'CAJA'}</h3>
+            <p>Total recepción hoy: {totalKg.toFixed(2)}kg en {lista.length} pesadas - pasa a despacho</p>
+            <div style={{display:'flex', gap:6, flexWrap:'wrap'}}><button style={miniBtn}>Venta</button><button style={miniBtn}>Cobranza</button><button style={miniBtn}>Gasto Reparto</button><button style={miniBtn}>Gasto Camión</button><button style={miniBtn}>Planilla</button></div>
           </div>
-        ))}
-      </div>
+        ) : null
+      ) : null}
     </div>
   )
 }
-const btn = {background:'black', color:'white', padding:'12px', borderRadius:10, border:'none', fontWeight:'bold', cursor:'pointer'}
-const input = {padding:'8px 12px', borderRadius:8, border:'1px solid #ccc', minWidth:200}
-const card = {border:'1px solid black', padding:15, borderRadius:12, background:'white'}
+const btn = {background:'black', color:'white', padding:'15px', borderRadius:12, border:'none', fontWeight:'bold', fontSize:13, cursor:'pointer'}
+const miniBtn = {padding:'8px 12px', border:'1px solid black', background:'white', borderRadius:20, fontSize:12}
