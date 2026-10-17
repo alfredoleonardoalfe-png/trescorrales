@@ -1,142 +1,103 @@
 "use client"
-import { useState } from "react"
+import Link from "next/link"
 
-export default function CajaCamal() {
-  const [operativo, setOperativo] = useState("Alfredo")
-  const [proveedor, setProveedor] = useState("Redondo")
-  const [listaProveedores, setListaProveedores] = useState(["San Fernando", "Redondo"])
-  const [filtroProv, setFiltroProv] = useState("TODOS")
-  const [cantJavas, setCantJavas] = useState(5)
-  const [pesoBruto, setPesoBruto] = useState("")
-  const [tara, setTara] = useState("7")
-  const [lista, setLista] = useState([])
-
-  const taraNum = tara === "" ? 0 : parseFloat(tara)
-  const brutoNum = pesoBruto === "" ? 0 : parseFloat(pesoBruto)
-  const taraTotal = taraNum * Number(cantJavas)
-  const pesoNeto = pesoBruto === "" ? "0.00" : (brutoNum - taraTotal).toFixed(2)
-  const esValido = pesoBruto !== "" && !isNaN(parseFloat(pesoBruto)) && parseFloat(pesoNeto) > 0
-
-  const guardar = () => {
-    if (!esValido) return alert("Peso bruto debe ser mayor a la tara")
-    if (proveedor.trim() === "") return alert("Escribe el proveedor")
-
-    // Si es proveedor nuevo, lo agregamos a la base de datos
-    if (!listaProveedores.includes(proveedor.trim())) {
-      setListaProveedores([...listaProveedores, proveedor.trim()])
-    }
-
-    const nuevo = {
-      id: Date.now(),
-      nro: lista.length + 1,
-      operativo: operativo.trim(),
-      proveedor: proveedor.trim(),
-      cantJavas: Number(cantJavas),
-      pesoBruto: brutoNum,
-      taraUnitaria: taraNum,
-      taraTotal,
-      pesoNeto: parseFloat(pesoNeto),
-      hora: new Date().toLocaleTimeString(),
-      fecha: new Date().toLocaleDateString(),
-    }
-    setLista([...lista, nuevo])
-    setPesoBruto("")
-  }
-
-  // Filtrado para historial
-  const listaFiltrada = filtroProv === "TODOS" ? lista : lista.filter(i => i.proveedor === filtroProv)
-  const totalNetoFiltrado = listaFiltrada.reduce((a, b) => a + b.pesoNeto, 0)
-  const totalJavasFiltrado = listaFiltrada.reduce((a, b) => a + b.cantJavas, 0)
-
+export default function Home() {
   return (
-    <div style={{ padding: 10, fontFamily: "Arial", maxWidth: 1050, margin: "0 auto" }}>
-      <h2 style={{margin:"10px 0"}}>🐔 CAJA CAMAL - TRES CORRALES</h2>
-      
-      <div style={{ background: "#eee", padding: 8, marginBottom: 10, border: "2px solid black", display: "flex", alignItems: "center", gap: 10 }}>
-        <b>Recepciona:</b>
-        <input value={operativo} onChange={e => setOperativo(e.target.value)} style={{ padding: 8, border: "2px solid black", fontWeight: "bold", flex: 1 }} />
-      </div>
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900">
+      <header className="max-w-6xl mx-auto px-6 py-10 text-center">
+        <h1 className="text-5xl font-black tracking-tighter text-blue-900">TRES CORRALES</h1>
+        <p className="mt-2 font-bold text-slate-600">Plataforma SAAS para negocios locales • Ica, Perú</p>
+        <div className="mt-6 inline-flex items-center gap-2 bg-green-600 text-white px-6 py-2 rounded-full font-black text-sm">
+          30 DÍAS GRATIS • Luego desde S/3 al día = una gaseosa
+        </div>
+      </header>
 
-      <div style={{ display: "flex", gap: 15, flexWrap: "wrap" }}>
-        {/* FORMULARIO */}
-        <div style={{ flex: "1 1 330px", border: "2px solid black", padding: 12 }}>
-          <label><b>Proveedor (base de datos):</b></label>
-          <input 
-            list="lista-proveedores"
-            value={proveedor} 
-            onChange={e => setProveedor(e.target.value)} 
-            placeholder="Ej: Redondo, Granja Juan..." 
-            style={{ width: "100%", padding: 12, marginBottom: 6, border: "2px solid black", fontWeight: "bold" }} 
-          />
-          <datalist id="lista-proveedores">
-            {listaProveedores.map(p => <option key={p} value={p} />)}
-          </datalist>
-          
-          <div style={{ fontSize: 11, marginBottom: 8, color: "#555" }}>Proveedores guardados: {listaProveedores.length}</div>
-          <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 12 }}>
-            {listaProveedores.map(p => (
-              <button key={p} onClick={() => setProveedor(p)} style={{ padding: "5px 9px", fontSize: 12, background: proveedor===p ? "black" : "white", color: proveedor===p ? "white" : "black", border: "1px solid black", cursor:"pointer" }}>{p}</button>
-            ))}
+      <main className="max-w-6xl mx-auto px-6 pb-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        {/* CAMALES */}
+        <div className="bg-white rounded-[24px] border-2 border-slate-900 p-6 shadow-[4px_4px_0px_0px_#000] flex flex-col">
+          <div className="text-3xl">🥩</div>
+          <h2 className="mt-2 font-black text-xl">CAMALES</h2>
+          <p className="text-3xl font-black">S/10<span className="text-base font-bold">/día</span></p>
+          <div className="mt-4">
+            <p className="text-xs font-black uppercase tracking-widest text-slate-500">Roles</p>
+            <p className="text-sm mt-1 font-bold">Asistente, Vendedor, Despachador</p>
           </div>
-
-          <label><b>Cantidad de Javas:</b></label>
-          <div style={{ display: "flex", gap: 6, marginBottom: 12, marginTop: 5 }}>
-            {[1,2,3,4,5].map(n => (
-              <button key={n} onClick={() => setCantJavas(n)} style={{ flex: 1, padding: 12, background: cantJavas==n? "black" : "white", color: cantJavas==n? "white" : "black", border: "2px solid black", fontWeight: "bold", cursor:"pointer" }}>{n}</button>
-            ))}
+          <div className="mt-4">
+            <p className="text-xs font-black uppercase tracking-widest text-slate-500">Incluye</p>
+            <ul className="text-sm mt-2 space-y-1 list-disc ml-4">
+              <li>Compra / Venta</li>
+              <li>Pago / Cobranza</li>
+              <li>Gastos Reparto</li>
+              <li>Gasto Camiones</li>
+              <li>Planilla</li>
+            </ul>
           </div>
-
-          <div style={{ display: "flex", gap: 10 }}>
-            <div style={{ flex: 1 }}><label>Bruto (kg):</label><input type="number" inputMode="decimal" value={pesoBruto} onChange={e => setPesoBruto(e.target.value)} placeholder="0" style={{ width: "100%", padding: 12, border: "2px solid black", fontSize: 22, fontWeight: "bold" }} /></div>
-            <div style={{ flex: 1 }}><label>Tara x Java:</label><input type="number" inputMode="decimal" value={tara} onChange={e => setTara(e.target.value)} style={{ width: "100%", padding: 12, border: "2px solid black", fontSize: 22, fontWeight: "bold" }} /></div>
-          </div>
-
-          <div style={{ background: pesoBruto==="" ? "#f0f0f0" : "#e6ffe6", padding: 12, marginTop: 12, textAlign: "center", border: pesoBruto==="" ? "2px solid #ccc" : "2px solid green" }}>
-            {pesoBruto==="" ? <><small>Esperando peso...</small><br/><b style={{ fontSize: 28 }}>0.00 kg</b></> : <><small>{brutoNum}kg - ({cantJavas} x {taraNum}kg) = {taraTotal.toFixed(2)}kg tara</small><br/><b style={{ fontSize: 30 }}>{pesoNeto} kg NETO</b></>}
-          </div>
-
-          <button onClick={guardar} disabled={!esValido} style={{ width: "100%", padding: 15, background: esValido ? "black" : "#999", color: "white", marginTop: 12, fontWeight: "bold", fontSize: 16, border:"none", cursor:"pointer" }}>GUARDAR 🔒 Y SIGUIENTE ➡️</button>
+          <Link href="/caja" className="mt-auto bg-black text-white py-3 rounded-xl text-center font-black text-sm">PROBAR CAMALES</Link>
         </div>
 
-        {/* HISTORIAL / BASE DE DATOS */}
-        <div style={{ flex: "1 1 380px", border: "2px solid black", padding: 12, background: "#f9f9f9" }}>
-          <h3 style={{ marginTop: 0 }}>📚 HISTORIAL POR PROVEEDOR</h3>
-          
-          <div style={{ display:"flex", gap:5, marginBottom:10, flexWrap:"wrap" }}>
-            <button onClick={()=>setFiltroProv("TODOS")} style={{padding:"6px 10px", background:filtroProv==="TODOS"?"black":"white", color:filtroProv==="TODOS"?"white":"black", border:"2px solid black", fontWeight:"bold"}}>TODOS</button>
-            {listaProveedores.map(p => (
-              <button key={p} onClick={()=>setFiltroProv(p)} style={{padding:"6px 10px", background:filtroProv===p?"red":"white", color:filtroProv===p?"white":"black", border:"1px solid black"}}>{p}</button>
-            ))}
+        {/* RESTAURANTE */}
+        <div className="bg-white rounded-[24px] border-2 border-slate-300 p-6 flex flex-col">
+          <div className="text-3xl">🍔</div>
+          <h2 className="mt-2 font-black text-xl">RESTAURANT</h2>
+          <p className="text-3xl font-black text-blue-700">S/5<span className="text-base">/día</span></p>
+          <div className="mt-4">
+            <p className="text-xs font-black uppercase text-slate-500">Dueño ADM: Corto, Clientes, QR</p>
+            <ul className="text-sm mt-2 space-y-1 list-disc ml-4">
+              <li>Delivery</li>
+              <li>QR en mesa</li>
+              <li>Cocina / Corto</li>
+              <li>Stock insumos</li>
+            </ul>
           </div>
-
-          <div style={{ background: "black", color: "white", padding: 10, display: "flex", justifyContent: "space-between", fontWeight: "bold", fontSize: 13 }}>
-            <span>Filtro: {filtroProv}</span>
-            <span>{listaFiltrada.length} pesadas</span>
-          </div>
-          <div style={{ background: "#222", color: "white", padding: 8, display: "flex", justifyContent: "space-between", fontSize: 13 }}>
-            <span>Javas: {totalJavasFiltrado}</span>
-            <span>Total Neto: {totalNetoFiltrado.toFixed(2)} kg</span>
-          </div>
-
-          <div style={{ maxHeight: 520, overflowY: "auto", marginTop: 10 }}>
-            {listaFiltrada.length === 0 && <p style={{ textAlign: "center", color: "#888" }}>No hay registros para {filtroProv}.</p>}
-            {[...listaFiltrada].reverse().map(item => (
-              <div key={item.id} style={{ background: "white", borderLeft: "5px solid red", border: "1px solid #ccc", padding: 8, marginBottom: 6, display: "flex", justifyContent: "space-between", fontSize: 13 }}>
-                <div>
-                  <b>#{item.nro} - {item.proveedor}</b><br/>
-                  {item.cantJavas}j x {item.taraUnitaria}kg - {item.operativo}<br/>
-                  <small>{item.pesoBruto}kg - {item.taraTotal.toFixed(2)}kg = <b>{item.pesoNeto}kg</b></small>
-                </div>
-                <div style={{ textAlign: "right" }}>
-                  <b style={{ color: "red" }}>{item.pesoNeto} kg</b><br/>
-                  <small>🔒 BLOQUEADO</small><br/>
-                  <small>{item.fecha} {item.hora}</small>
-                </div>
-              </div>
-            ))}
+          <div className="mt-auto pt-6">
+            <button className="w-full bg-slate-200 py-3 rounded-xl font-black text-sm">PRÓXIMAMENTE</button>
           </div>
         </div>
-      </div>
+
+        {/* BODEGA */}
+        <div className="bg-white rounded-[24px] border-2 border-slate-300 p-6 flex flex-col">
+          <div className="text-3xl">📦</div>
+          <h2 className="mt-2 font-black text-xl">BODEGA</h2>
+          <p className="text-3xl font-black text-green-700">S/3<span className="text-base">/día</span></p>
+          <div className="mt-4">
+            <p className="text-xs font-black uppercase text-slate-500">Dueño ADM: Productos</p>
+            <ul className="text-sm mt-2 space-y-1 list-disc ml-4">
+              <li>Stock</li>
+              <li>Pedidos</li>
+              <li>Compra / Venta</li>
+              <li>Alertas de falta</li>
+            </ul>
+          </div>
+          <div className="mt-auto pt-6">
+            <button className="w-full bg-slate-200 py-3 rounded-xl font-black text-sm">PRÓXIMAMENTE</button>
+          </div>
+        </div>
+
+        {/* DENTISTA */}
+        <div className="bg-white rounded-[24px] border-2 border-slate-300 p-6 flex flex-col">
+          <div className="text-3xl">🦷</div>
+          <h2 className="mt-2 font-black text-xl">DENTISTA</h2>
+          <p className="text-3xl font-black text-blue-700">S/5<span className="text-base">/día</span></p>
+          <div className="mt-4">
+            <p className="text-xs font-black uppercase text-slate-500">Dueño ADM: Consulta</p>
+            <ul className="text-sm mt-2 space-y-1 list-disc ml-4">
+              <li>Agenda de Citas</li>
+              <li>Consulta / Historial</li>
+              <li>Procedimiento</li>
+              <li>Pagos / Deudas</li>
+            </ul>
+          </div>
+          <div className="mt-auto pt-6">
+            <button className="w-full bg-slate-200 py-3 rounded-xl font-black text-sm">PRÓXIMAMENTE</button>
+          </div>
+        </div>
+
+      </main>
+
+      <footer className="text-center pb-10 text-xs font-bold text-slate-400">
+        ADMINISTRADOR PRINCIPAL (Tú) • Control total • Soporte 24/7 • Listo para Play Store
+      </footer>
     </div>
   )
 }
