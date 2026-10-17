@@ -1,103 +1,91 @@
 "use client"
-import Link from "next/link"
+import { useState } from "react"
 
-export default function Home() {
-  return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-900">
-      <header className="max-w-6xl mx-auto px-6 py-10 text-center">
-        <h1 className="text-5xl font-black tracking-tighter text-blue-900">TRES CORRALES</h1>
-        <p className="mt-2 font-bold text-slate-600">Plataforma SAAS para negocios locales • Ica, Perú</p>
-        <div className="mt-6 inline-flex items-center gap-2 bg-green-600 text-white px-6 py-2 rounded-full font-black text-sm">
-          30 DÍAS GRATIS • Luego desde S/3 al día = una gaseosa
+export default function CajaCamales() {
+  const [rol, setRol] = useState(null)
+  const [tab, setTab] = useState("venta")
+  const [ventas, setVentas] = useState([])
+  const [compras, setCompras] = useState([])
+  const [gastos, setGastos] = useState([])
+
+  const [form, setForm] = useState({ concepto: "", monto: "", tipo: "venta" })
+
+  const agregar = () => {
+    if(!form.concepto || !form.monto) return
+    const item = { id: Date.now(), concepto: form.concepto, monto: parseFloat(form.monto), fecha: new Date().toLocaleString() }
+    if(form.tipo === "venta") setVentas([...ventas, item])
+    if(form.tipo === "compra") setCompras([...compras, item])
+    if(form.tipo === "gasto") setGastos([...gastos, item])
+    setForm({ concepto: "", monto: "", tipo: form.tipo })
+  }
+
+  const totalVentas = ventas.reduce((a,b)=>a+b.monto,0)
+  const totalCompras = compras.reduce((a,b)=>a+b.monto,0)
+  const totalGastos = gastos.reduce((a,b)=>a+b.monto,0)
+  const caja = totalVentas - totalCompras - totalGastos
+
+  if(!rol){
+    return(
+      <div style={{padding:40, fontFamily:'Arial', textAlign:'center', maxWidth:500, margin:'0 auto'}}>
+        <h1 style={{fontWeight:900}}>TRES CORRALES - CAMALES</h1>
+        <p>Ingresa tu rol para continuar</p>
+        <div style={{display:'grid', gap:15, marginTop:20}}>
+          <button onClick={()=>setRol('Asistente')} style={btn}>ASISTENTE (Compra/Venta)</button>
+          <button onClick={()=>setRol('Vendedor')} style={btn}>VENDEDOR (Ventas/Cobranza)</button>
+          <button onClick={()=>setRol('Despachador')} style={{...btn, background:'#222'}}>DESPACHADOR (Gastos/Planilla)</button>
         </div>
-      </header>
+        <a href="/" style={{display:'block', marginTop:20}}>← Volver a portada</a>
+      </div>
+    )
+  }
 
-      <main className="max-w-6xl mx-auto px-6 pb-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        
-        {/* CAMALES */}
-        <div className="bg-white rounded-[24px] border-2 border-slate-900 p-6 shadow-[4px_4px_0px_0px_#000] flex flex-col">
-          <div className="text-3xl">🥩</div>
-          <h2 className="mt-2 font-black text-xl">CAMALES</h2>
-          <p className="text-3xl font-black">S/10<span className="text-base font-bold">/día</span></p>
-          <div className="mt-4">
-            <p className="text-xs font-black uppercase tracking-widest text-slate-500">Roles</p>
-            <p className="text-sm mt-1 font-bold">Asistente, Vendedor, Despachador</p>
-          </div>
-          <div className="mt-4">
-            <p className="text-xs font-black uppercase tracking-widest text-slate-500">Incluye</p>
-            <ul className="text-sm mt-2 space-y-1 list-disc ml-4">
-              <li>Compra / Venta</li>
-              <li>Pago / Cobranza</li>
-              <li>Gastos Reparto</li>
-              <li>Gasto Camiones</li>
-              <li>Planilla</li>
-            </ul>
-          </div>
-          <Link href="/caja" className="mt-auto bg-black text-white py-3 rounded-xl text-center font-black text-sm">PROBAR CAMALES</Link>
+  return(
+    <div style={{padding:15, fontFamily:'Arial', maxWidth:1000, margin:'0 auto'}}>
+      <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', borderBottom:'2px solid black', paddingBottom:10}}>
+        <h2 style={{margin:0}}>CAMALES | Rol: {rol}</h2>
+        <div style={{display:'flex', gap:10, alignItems:'center'}}>
+          <div style={{background: caja>=0?'green':'red', color:'white', padding:'5px 12px', borderRadius:20, fontWeight:'bold'}}>CAJA: S/ {caja.toFixed(2)}</div>
+          <button onClick={()=>setRol(null)} style={{padding:'5px 10px'}}>Salir</button>
         </div>
+      </div>
 
-        {/* RESTAURANTE */}
-        <div className="bg-white rounded-[24px] border-2 border-slate-300 p-6 flex flex-col">
-          <div className="text-3xl">🍔</div>
-          <h2 className="mt-2 font-black text-xl">RESTAURANT</h2>
-          <p className="text-3xl font-black text-blue-700">S/5<span className="text-base">/día</span></p>
-          <div className="mt-4">
-            <p className="text-xs font-black uppercase text-slate-500">Dueño ADM: Corto, Clientes, QR</p>
-            <ul className="text-sm mt-2 space-y-1 list-disc ml-4">
-              <li>Delivery</li>
-              <li>QR en mesa</li>
-              <li>Cocina / Corto</li>
-              <li>Stock insumos</li>
-            </ul>
-          </div>
-          <div className="mt-auto pt-6">
-            <button className="w-full bg-slate-200 py-3 rounded-xl font-black text-sm">PRÓXIMAMENTE</button>
-          </div>
+      <div style={{display:'flex', gap:8, marginTop:15, flexWrap:'wrap'}}>
+        {["venta","compra","cobranza","pago","gastos_reparto","gastos_camion","planilla"].map(t=>(
+          <button key={t} onClick={()=>setTab(t)} style={{padding:'8px 12px', borderRadius:20, border:'1px solid black', background: tab===t ? 'black':'white', color: tab===t ? 'white':'black', fontSize:12, textTransform:'uppercase'}}>{t.replace('_',' ')}</button>
+        ))}
+      </div>
+
+      <div style={{marginTop:20, border:'1px solid #ccc', padding:15, borderRadius:15, background:'#f9f9f9'}}>
+        <h3 style={{textTransform:'uppercase'}}>{tab} - {rol}</h3>
+        <div style={{display:'flex', gap:10, flexWrap:'wrap'}}>
+          <input placeholder="Concepto Ej: Venta Carnero / Gasolina / Pago" value={form.concepto} onChange={e=>setForm({...form, concepto:e.target.value})} style={input}/>
+          <input placeholder="Monto S/" type="number" value={form.monto} onChange={e=>setForm({...form, monto:e.target.value})} style={{...input, width:120}}/>
+          <select value={form.tipo} onChange={e=>setForm({...form, tipo:e.target.value})} style={input}>
+            <option value="venta">Venta / Cobranza</option>
+            <option value="compra">Compra / Pago</option>
+            <option value="gasto">Gasto Reparto / Camión / Planilla</option>
+          </select>
+          <button onClick={agregar} style={{...btn, padding:'8px 20px'}}>AGREGAR</button>
         </div>
+      </div>
 
-        {/* BODEGA */}
-        <div className="bg-white rounded-[24px] border-2 border-slate-300 p-6 flex flex-col">
-          <div className="text-3xl">📦</div>
-          <h2 className="mt-2 font-black text-xl">BODEGA</h2>
-          <p className="text-3xl font-black text-green-700">S/3<span className="text-base">/día</span></p>
-          <div className="mt-4">
-            <p className="text-xs font-black uppercase text-slate-500">Dueño ADM: Productos</p>
-            <ul className="text-sm mt-2 space-y-1 list-disc ml-4">
-              <li>Stock</li>
-              <li>Pedidos</li>
-              <li>Compra / Venta</li>
-              <li>Alertas de falta</li>
-            </ul>
-          </div>
-          <div className="mt-auto pt-6">
-            <button className="w-full bg-slate-200 py-3 rounded-xl font-black text-sm">PRÓXIMAMENTE</button>
-          </div>
-        </div>
+      <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:15, marginTop:20}}>
+        <div style={card}><b>Ventas/Cobranza</b><br/>S/ {totalVentas.toFixed(2)}<br/><small>{ventas.length} movs</small></div>
+        <div style={card}><b>Compras/Pagos</b><br/>S/ {totalCompras.toFixed(2)}<br/><small>{compras.length} movs</small></div>
+        <div style={card}><b>Gastos Totales</b><br/>S/ {totalGastos.toFixed(2)}<br/><small>Reparto+Camión+Planilla</small></div>
+      </div>
 
-        {/* DENTISTA */}
-        <div className="bg-white rounded-[24px] border-2 border-slate-300 p-6 flex flex-col">
-          <div className="text-3xl">🦷</div>
-          <h2 className="mt-2 font-black text-xl">DENTISTA</h2>
-          <p className="text-3xl font-black text-blue-700">S/5<span className="text-base">/día</span></p>
-          <div className="mt-4">
-            <p className="text-xs font-black uppercase text-slate-500">Dueño ADM: Consulta</p>
-            <ul className="text-sm mt-2 space-y-1 list-disc ml-4">
-              <li>Agenda de Citas</li>
-              <li>Consulta / Historial</li>
-              <li>Procedimiento</li>
-              <li>Pagos / Deudas</li>
-            </ul>
+      <div style={{marginTop:20}}>
+        <h4>Últimos movimientos</h4>
+        {[...ventas, ...compras, ...gastos].sort((a,b)=>b.id-a.id).slice(0,10).map(m=>(
+          <div key={m.id} style={{display:'flex', justifyContent:'space-between', borderBottom:'1px solid #eee', padding:'8px 0'}}>
+            <span>{m.concepto} - {m.fecha}</span><b>S/ {m.monto}</b>
           </div>
-          <div className="mt-auto pt-6">
-            <button className="w-full bg-slate-200 py-3 rounded-xl font-black text-sm">PRÓXIMAMENTE</button>
-          </div>
-        </div>
-
-      </main>
-
-      <footer className="text-center pb-10 text-xs font-bold text-slate-400">
-        ADMINISTRADOR PRINCIPAL (Tú) • Control total • Soporte 24/7 • Listo para Play Store
-      </footer>
+        ))}
+      </div>
     </div>
   )
 }
+const btn = {background:'black', color:'white', padding:'12px', borderRadius:10, border:'none', fontWeight:'bold', cursor:'pointer'}
+const input = {padding:'8px 12px', borderRadius:8, border:'1px solid #ccc', minWidth:200}
+const card = {border:'1px solid black', padding:15, borderRadius:12, background:'white'}
