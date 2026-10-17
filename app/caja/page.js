@@ -25,8 +25,8 @@ const guardar=()=>{
 if(!rol){
 return(
 <div style={{padding:30,textAlign:'center',fontFamily:'Arial',maxWidth:450,margin:'0 auto'}}>
-<h1 style={{fontWeight:900}}>TRES CORRALES - CAMALES</h1>
-<p>Ingresa tu rol para continuar</p>
+<h1 style={{fontWeight:900,lineHeight:1.1}}>TRES CORRALES<br/>SISTEMA DE COMERCIO AVICOLA</h1>
+<p>Solo comercio avícola - Ingresa tu rol</p>
 <div style={{display:'grid',gap:14,marginTop:20}}>
 <button onClick={()=>setRol('ASISTENTE')} style={b1}>ASISTENTE (Compra/Venta)</button>
 <button onClick={()=>setRol('VENDEDOR')} style={b1}>VENDEDOR (Ventas/Cobranza)</button>
@@ -39,51 +39,34 @@ return(
 return(
 <div style={{padding:12,fontFamily:'Arial',maxWidth:600,margin:'0 auto'}}>
 <div style={{display:'flex',justifyContent:'space-between',borderBottom:'2px solid black',paddingBottom:8}}>
-<b>{rol}</b><button onClick={()=>setRol(null)}>Salir</button>
+<b>{rol} - AVICOLA</b><button onClick={()=>setRol(null)}>Salir</button>
 </div>
 
-{rol==='ASISTENTE'&&
-<div style={card}><h3>ASISTENTE - Compra / Venta</h3>
-<button style={b1}>Nueva Compra</button><br/><br/>
-<button style={b1}>Nueva Venta</button><br/><br/>
-<button style={b1}>Ver Kardex</button>
-</div>}
-
-{rol==='VENDEDOR'&&
-<div style={card}><h3>VENDEDOR - Ventas / Cobranza</h3>
-<button style={b1}>Registrar Venta</button><br/><br/>
-<button style={b1}>Cobrar Cliente</button><br/><br/>
-<button style={b1}>Lista de Deudas</button>
-</div>}
-
-{rol==='DESPACHADOR'&&
-<div style={card}><h3>DESPACHADOR - Gastos / Planilla</h3>
-<button style={b1}>Gasto Reparto</button><br/><br/>
-<button style={b1}>Gasto Camión</button><br/><br/>
-<button style={b1}>Planilla / Personal</button>
-</div>}
+{rol==='ASISTENTE'&&<div style={card}><h3>ASISTENTE AVICOLA</h3><button style={b1}>Nueva Compra Avícola</button><br/><br/><button style={b1}>Nueva Venta Avícola</button><br/><br/><button style={b1}>Kardex Avícola</button></div>}
+{rol==='VENDEDOR'&&<div style={card}><h3>VENDEDOR AVICOLA</h3><button style={b1}>Registrar Venta Avícola</button><br/><br/><button style={b1}>Cobrar Cliente Avícola</button><br/><br/><button style={b1}>Deudas Avícolas</button></div>}
+{rol==='DESPACHADOR'&&<div style={card}><h3>DESPACHADOR AVICOLA</h3><button style={b1}>Gasto Reparto Avícola</button><br/><br/><button style={b1}>Gasto Camión Avícola</button><br/><br/><button style={b1}>Planilla Avícola</button></div>}
 
 {rol==='BALANCERO'&&<>
 <div style={{display:'flex',gap:6,marginTop:12}}>
-<button onClick={()=>setSub("recepcion")} style={{flex:1,padding:10,background:sub==="recepcion"?"black":"white",color:sub==="recepcion"?"white":"black",border:'2px solid black',fontWeight:'bold'}}>RECEPCIÓN</button>
-<button onClick={()=>setSub("despacho")} style={{flex:1,padding:10,background:sub==="despacho"?"black":"white",color:sub==="despacho"?"white":"black",border:'2px solid black',fontWeight:'bold'}}>DESPACHO</button>
+<button onClick={()=>setSub("recepcion")} style={{flex:1,padding:10,background:sub==="recepcion"?"black":"white",color:sub==="recepcion"?"white":"black",border:'2px solid black',fontWeight:'bold'}}>RECEPCIÓN AVICOLA</button>
+<button onClick={()=>setSub("despacho")} style={{flex:1,padding:10,background:sub==="despacho"?"black":"white",color:sub==="despacho"?"white":"black",border:'2px solid black',fontWeight:'bold'}}>DESPACHO AVICOLA</button>
 </div>
 
 {sub==="recepcion"?
 <div style={card}>
 <p>Recepciona: <input value={rec} onChange={e=>setRec(e.target.value)} style={{border:'2px solid black',padding:6,fontWeight:'bold'}}/></p>
-<p>Proveedor: <b>{prov}</b> | Javas: <b>{javas}</b></p>
+<p>Proveedor Avícola: <b>{prov}</b> | Javas: <b>{javas}</b></p>
 <div style={{display:'flex',gap:10}}>
 <div><label>Bruto</label><br/><input type="number" value={bruto} onChange={e=>setBruto(e.target.value)} style={{width:90,padding:12,border:'2px solid black',fontSize:20,fontWeight:'bold'}}/></div>
 <div><label>Tara x Java</label><br/><input type="number" value={tara} onChange={e=>setTara(e.target.value)} style={{width:70,padding:12,border:'2px solid black',fontSize:20,fontWeight:'bold'}}/></div>
 </div>
-<h2 style={{background:'#d4edda',border:'2px solid green',textAlign:'center',padding:10}}>{neto.toFixed(2)} kg NETO</h2>
+<h2 style={{background:'#d4edda',border:'2px solid green',textAlign:'center',padding:10}}>{neto.toFixed(2)} kg NETO AVICOLA</h2>
 <button onClick={guardar} style={{width:'100%',background:'black',color:'white',padding:15,fontWeight:'bold',fontSize:18}}>GUARDAR Y SIGUIENTE</button>
 <div style={{marginTop:12,background:'black',color:'white',padding:8,display:'flex',justifyContent:'space-between'}}><span>Pesadas: {lista.length}</span><span>{total.toFixed(2)} kg</span></div>
 {lista.slice().reverse().map(p=><div key={p.id} style={{borderBottom:'1px solid #ccc',padding:6,display:'flex',justifyContent:'space-between'}}><span>{p.javas}j - {p.bruto}kg = {p.neto}kg - {p.quien}</span><b>{p.neto}kg</b></div>)}
 </div>
 :
-<div style={card}><h3>DESPACHO</h3><p>Total recepción hoy: <b>{total.toFixed(2)} kg</b> en {lista.length} pesadas</p><p>Aquí va el despacho y ventas.</p></div>}
+<div style={card}><h3>DESPACHO AVICOLA</h3><p>Total recepción hoy: <b>{total.toFixed(2)} kg</b> en {lista.length} pesadas</p></div>}
 </>}
 </div>
 )}
