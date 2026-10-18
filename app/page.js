@@ -1,23 +1,91 @@
-export default function Home(){
+"use client"
+import { useState, useEffect } from "react"
+export default function Admin(){
+const [login,setLogin]=useState(false)
+const [user,setUser]=useState("")
+const [pass,setPass]=useState("")
+const [showPass,setShowPass]=useState(false)
+const [showNewPass,setShowNewPass]=useState(false)
+const [dueños,setDueños]=useState([])
+const [nuevoNombre,setNuevoNombre]=useState("")
+const [nuevoUser,setNuevoUser]=useState("")
+const [nuevoPass,setNuevoPass]=useState("")
+
+useEffect(()=>{
+const saved=localStorage.getItem("dueños_avicola")
+if(saved) setDueños(JSON.parse(saved))
+else {
+const hoy=new Date().toISOString()
+setDueños([
+{name:"José María",user:"josemaria",pass:"josemaria123",activo:true,inicio:hoy},
+{name:"Vargas",user:"vargas",pass:"vargas123",activo:true,inicio:hoy},
+{name:"Abraham",user:"abraham",pass:"abraham123",activo:true,inicio:hoy},
+])
+}
+},[])
+
+const guardar=(list)=>{setDueños(list); localStorage.setItem("dueños_avicola",JSON.stringify(list))}
+const diasRestantes=(inicio)=>{ const diff=Math.floor((new Date()-new Date(inicio))/(1000*60*60*24)); return 30-diff }
+const toggleActivo=(i)=>{ const n=[...dueños]; n[i].activo=!n[i].activo; guardar(n) }
+const extender=(i)=>{ const n=[...dueños]; n[i].inicio=new Date().toISOString(); guardar(n) }
+const agregarDueño=()=>{
+if(!nuevoNombre||!nuevoUser||!nuevoPass) return alert("Llena todo")
+const n=[...dueños,{name:nuevoNombre,user:nuevoUser,pass:nuevoPass,activo:true,inicio:new Date().toISOString()}]
+guardar(n); setNuevoNombre(""); setNuevoUser(""); setNuevoPass(""); alert("Dueño agregado con 30 días")
+}
+
+if(!login){
 return(
-<div style={{fontFamily:'Arial', maxWidth:800, margin:'0 auto', padding:20}}>
-<h1 style={{fontSize:32, fontWeight:900}}>TRES CORRALES</h1>
-<p>Plataforma SAAS para negocios locales - Ica, Perú</p>
-<div style={{background:'#0a7a33', color:'white', padding:'10px 20px', borderRadius:30, display:'inline-block', fontWeight:'bold', marginTop:10}}>30 DÍAS GRATIS - Luego desde S/3 al día = una gaseosa</div>
+<div style={{padding:30,maxWidth:450,margin:"0 auto",fontFamily:"Arial"}}>
+<h1 style={{fontWeight:900,textAlign:"center"}}>TRES CORRALES<br/>PANEL ADMINISTRADOR</h1>
+<p style={{textAlign:"center"}}>SISTEMA DE COMERCIO AVICOLA</p>
+<div style={{border:"2px solid black",padding:20,borderRadius:12,marginTop:20}}>
+<input value={user} onChange={e=>setUser(e.target.value)} placeholder="Usuario: alfredo" style={{width:"100%",padding:12,border:"2px solid black"}}/>
+<div style={{display:"flex",marginTop:10,border:"2px solid black"}}>
+<input type={showPass?"text":"password"} value={pass} onChange={e=>setPass(e.target.value)} placeholder="Clave: alfredo123" style={{flex:1,padding:12,border:"none"}}/>
+<button onClick={()=>setShowPass(!showPass)} style={{background:"white",border:"none",padding:"0 12px",fontSize:20}}>{showPass?"🙈":"👁️"}</button>
+</div>
+<button onClick={()=>{if(user==="alfredo"&&pass==="alfredo123") setLogin(true); else alert("alfredo / alfredo123")}} style={{width:"100%",marginTop:15,background:"black",color:"white",padding:14,fontWeight:"bold"}}>ENTRAR</button>
+</div>
+</div>
+)
+}
 
-<div style={{border:'2px solid black', borderRadius:15, padding:20, marginTop:25}}>
-<h2 style={{margin:0}}>CAMALES - S/10/día</h2>
-<p><b>Roles:</b> Asistente, Vendedor, Despachador, <span style={{background:'green', color:'white', padding:'2px 8px', borderRadius:10}}>BALANCERO (Recepción y Despacho)</span></p>
-<p><b>Incluye:</b> Compra/Venta, Pago/Cobranza, Gastos Reparto, Gasto Camiones, Planilla, <b>+ Pesaje de Javas, Bruto/Tara/Neto</b></p>
-<a href="/caja" style={{background:'black', color:'white', padding:'12px 25px', borderRadius:10, textDecoration:'none', fontWeight:'bold', display:'inline-block', marginTop:10}}>PROBAR CAMALES</a>
+return(
+<div style={{padding:15,maxWidth:700,margin:"0 auto",fontFamily:"Arial"}}>
+<div style={{display:"flex",justifyContent:"space-between",borderBottom:"3px solid black",paddingBottom:10}}>
+<b>ADMIN: Alfredo - AVICOLA</b><button onClick={()=>setLogin(false)}>Salir</button>
+</div>
+<h2 style={{textAlign:"center"}}>Dueños - 30 días prueba</h2>
+{dueños.map((d,i)=>{
+const rest=diasRestantes(d.inicio)
+return(
+<div key={i} style={{border:"2px solid black",padding:12,borderRadius:10,marginTop:12,background:rest<=0?"#ffcccc":"white"}}>
+<div style={{display:"flex",justifyContent:"space-between"}}>
+<div><b>{d.name}</b><br/><span style={{fontSize:13}}>{d.user} | {d.pass}</span><br/><b style={{color:rest<=0?"red":"green"}}>{rest<=0?`VENCIDO`:`Quedan ${rest} días`}</b> - {d.activo?"ACTIVO":"DESACTIVADO"}</div>
+<div style={{display:"grid",gap:5}}>
+<button onClick={()=>toggleActivo(i)} style={{background:d.activo?"green":"red",color:"white",padding:"6px 10px",border:"none",fontWeight:"bold"}}>{d.activo?"DESACTIVAR":"ACTIVAR"}</button>
+<button onClick={()=>extender(i)} style={{background:"black",color:"white",padding:"6px 10px",border:"none"}}>Reiniciar 30d</button>
+</div>
+</div>
+</div>
+)
+})}
+
+<div style={{border:"3px dashed black",padding:15,borderRadius:10,marginTop:25}}>
+<h3 style={{margin:0}}>+ Agregar nuevo dueño</h3>
+<input value={nuevoNombre} onChange={e=>setNuevoNombre(e.target.value)} placeholder="Nombre: Ej. Carlos" style={{width:"100%",padding:10,border:"2px solid black",marginTop:10}}/>
+<input value={nuevoUser} onChange={e=>setNuevoUser(e.target.value)} placeholder="Usuario: Ej. carlos" style={{width:"100%",padding:10,border:"2px solid black",marginTop:8}}/>
+<div style={{display:"flex",marginTop:8,border:"2px solid black"}}>
+<input type={showNewPass?"text":"password"} value={nuevoPass} onChange={e=>setNuevoPass(e.target.value)} placeholder="Clave: Ej. carlos123" style={{flex:1,padding:10,border:"none"}}/>
+<button onClick={()=>setShowNewPass(!showNewPass)} style={{background:"white",border:"none",padding:"0 12px",fontSize:20}}>{showNewPass?"🙈":"👁️"}</button>
+</div>
+<button onClick={agregarDueño} style={{width:"100%",marginTop:10,background:"black",color:"white",padding:12,fontWeight:"bold"}}>AGREGAR CON 30 DÍAS</button>
 </div>
 
-<div style={{display:'flex', gap:20, marginTop:30, flexWrap:'wrap'}}>
-<div><b>RESTAURANT</b><br/>S/5/día<br/><small>Delivery, QR, Corto</small></div>
-<div><b>BODEGA</b><br/>S/3/día<br/><small>Stock, Pedidos</small></div>
-<div><b>DENTISTA</b><br/>S/5/día<br/><small>Agenda, Consulta</small></div>
+<div style={{marginTop:20,background:"#d4edda",border:"2px solid green",padding:12,textAlign:"center"}}>
+<a href="/caja" style={{fontWeight:"bold"}}>IR AL SISTEMA /caja</a>
 </div>
-
-<p style={{marginTop:30, textAlign:'center'}}><a href="/caja">Ir a /caja →</a></p>
 </div>
-)}
+)
+}
